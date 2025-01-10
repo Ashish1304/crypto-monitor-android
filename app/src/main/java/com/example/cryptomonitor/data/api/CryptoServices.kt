@@ -1,22 +1,21 @@
 package com.example.cryptomonitor.data.api
 
-import com.example.cryptomonitor.data.models.CryptoPrice
 import retrofit2.http.GET
 import retrofit2.http.Header
-import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface BinanceService {
     @GET("api/v3/ticker/price")
     suspend fun getPrice(
         @Header("X-MBX-APIKEY") apiKey: String,
-        @Path("symbol") symbol: String
-    ): CryptoPrice
+        @Query("symbol") symbol: String
+    ): BinanceResponse
 }
 
 interface BitsoService {
-    @GET("api/v3/ticker/{symbol}")
+    @GET("v3/ticker/")
     suspend fun getPrice(
         @Header("Authorization") apiKey: String,
-        @Path("symbol") symbol: String
-    ): CryptoPrice
+        @Query("book") book: String
+    ): BitsoResponse
 }

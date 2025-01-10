@@ -24,9 +24,16 @@ data class ApiConfig(
     val apiSecret: String
 )
 
+@Entity
+data class UserSettings(
+    @PrimaryKey
+    val id: Int = 1,
+    val preferredCurrency: String = "MXN"
+)
+
 data class CryptoPrice(
     val coinId: String,
     val platform: String,
     val price: Double,
-    val timestamp: Long
+    val timestamp: Long = System.currentTimeMillis()
 )
