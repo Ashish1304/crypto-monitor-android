@@ -1,0 +1,21 @@
+{
+    "name": "Android Development",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+        "ghcr.io/devcontainers/features/java:1": {
+            "version": "17",
+            "installMaven": "false",
+            "installGradle": "true"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "vscjava.vscode-java-pack",
+                "fwcd.kotlin"
+            ]
+        }
+    },
+    "postCreateCommand": "bash .devcontainer/setup-android.sh",
+    "remoteUser": "vscode"
+}
