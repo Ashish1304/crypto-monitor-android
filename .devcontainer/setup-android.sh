@@ -2,7 +2,7 @@
 
 # Install required packages
 sudo apt-get update
-sudo apt-get install -y wget unzip
+sudo apt-get install -y wget unzip gradle
 
 # Create Android SDK directory
 mkdir -p ${HOME}/android-sdk
@@ -23,3 +23,6 @@ echo "export PATH=${PATH}:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID
 # Accept licenses and install required packages
 yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses
 ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+
+# Create local.properties
+echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
