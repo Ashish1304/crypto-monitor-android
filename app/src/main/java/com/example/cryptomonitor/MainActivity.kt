@@ -12,20 +12,20 @@ import com.example.cryptomonitor.ui.components.ApiConfigScreen
 import com.example.cryptomonitor.ui.components.CryptoList
 import com.example.cryptomonitor.ui.theme.CryptoMonitorTheme
 import com.example.cryptomonitor.ui.viewmodel.MainViewModel
+import com.example.cryptomonitor.data.models.ApiConfig
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val cryptoApp = application as CryptoApplication
         
-        val appContainer = (application as CryptoApplication).container
-
         setContent {
             CryptoMonitorTheme {
                 val viewModel: MainViewModel = viewModel()
                 var showingApiConfig by remember { mutableStateOf(false) }
 
                 LaunchedEffect(Unit) {
-                    viewModel.setRepository(appContainer.repository)
+                    viewModel.setRepository(cryptoApp.repository)
                 }
 
                 Surface(
@@ -35,7 +35,13 @@ class MainActivity : ComponentActivity() {
                     if (showingApiConfig) {
                         ApiConfigScreen(
                             onSaveConfig = { platform, apiKey, apiSecret ->
-                                viewModel.saveApiConfig(platform, apiKey, apiSecret)
+                                viewModel.addApiConfig(
+                                    ApiConfig(
+                                        platform = platform,
+                                        apiKey = apiKey,
+                                        apiSecret = apiSecret
+                                    )
+                                )
                                 showingApiConfig = false
                             },
                             onBack = { showingApiConfig = false }

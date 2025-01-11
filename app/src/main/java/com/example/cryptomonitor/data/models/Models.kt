@@ -2,6 +2,10 @@ package com.example.cryptomonitor.data.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 @Entity
 data class CryptoAlert(
@@ -25,10 +29,12 @@ data class ApiConfig(
 )
 
 @Entity
+@TypeConverters(Converters::class)
 data class UserSettings(
     @PrimaryKey
     val id: Int = 1,
-    val preferredCurrency: String = "MXN"
+    val preferredCurrency: String = "MXN",
+    val selectedCryptos: Set<String> = emptySet()
 )
 
 data class CryptoPrice(
@@ -37,3 +43,16 @@ data class CryptoPrice(
     val price: Double,
     val timestamp: Long = System.currentTimeMillis()
 )
+
+class Converters {
+    @TypeConverter
+    fun fromString(value: String): Set<String> {
+        val listType = object : TypeToken<Set<String>>() {}.type
+        return Gson().fromJson(value, listType)
+    }
+
+    @TypeConverter
+    fun toString(value: Set<String>): String {
+        return Gson().toJson(value)
+    }
+}

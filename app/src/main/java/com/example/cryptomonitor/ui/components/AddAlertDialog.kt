@@ -10,16 +10,17 @@ import com.example.cryptomonitor.data.models.CryptoAlert
 @Composable
 fun AddAlertDialog(
     cryptoId: String,
+    existingAlert: CryptoAlert? = null,
     onDismiss: () -> Unit,
     onConfirm: (CryptoAlert) -> Unit
 ) {
-    var upperLimit by remember { mutableStateOf("") }
-    var lowerLimit by remember { mutableStateOf("") }
-    var percentageChange by remember { mutableStateOf("") }
+    var upperLimit by remember { mutableStateOf(existingAlert?.upperLimit?.toString() ?: "") }
+    var lowerLimit by remember { mutableStateOf(existingAlert?.lowerLimit?.toString() ?: "") }
+    var percentageChange by remember { mutableStateOf(existingAlert?.percentageChange?.toString() ?: "") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Alert for $cryptoId") },
+        title = { Text(if (existingAlert != null) "Edit Alert for $cryptoId" else "Add Alert for $cryptoId") },
         text = {
             Column {
                 OutlinedTextField(
@@ -54,6 +55,7 @@ fun AddAlertDialog(
             Button(
                 onClick = {
                     val alert = CryptoAlert(
+                        id = existingAlert?.id ?: 0,
                         coinId = cryptoId,
                         platform = "ALL",
                         upperLimit = upperLimit.toDoubleOrNull(),
@@ -63,7 +65,7 @@ fun AddAlertDialog(
                     onConfirm(alert)
                 }
             ) {
-                Text("Add Alert")
+                Text(if (existingAlert != null) "Update Alert" else "Add Alert")
             }
         },
         dismissButton = {

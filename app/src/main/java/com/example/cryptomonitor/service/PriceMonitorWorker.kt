@@ -19,27 +19,32 @@ class PriceMonitorWorker(
     override suspend fun doWork(): Result = coroutineScope {
         try {
             val alerts = repository.getAllAlerts()
-            for (alert in alerts) {
+            
+            alerts.forEach { alert ->
                 try {
                     val price = repository.getPrice(alert.coinId, alert.platform)
                     
                     alert.upperLimit?.let { limit ->
                         if (price.price > limit) {
-                            showNotification("${alert.coinId} price above ${limit}")
+                            showNotification(
+                                "${alert.coinId} price above ${String.format("%.2f", limit)}"
+                            )
                         }
                     }
 
                     alert.lowerLimit?.let { limit ->
                         if (price.price < limit) {
-                            showNotification("${alert.coinId} price below ${limit}")
+                            showNotification(
+                                "${alert.coinId} price below ${String.format("%.2f", limit)}"
+                            )
                         }
                     }
 
-                    alert.percentageChange?.let { change ->
+                    alert.percentageChange?.let { percentChange ->
                         // Implement percentage change logic here
                     }
                 } catch (e: Exception) {
-                    continue // Skip this alert if there's an error
+                    // Log error or show notification for failed price check
                 }
             }
 

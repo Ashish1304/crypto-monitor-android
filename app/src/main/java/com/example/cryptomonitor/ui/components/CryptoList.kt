@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.cryptomonitor.ui.viewmodel.MainViewModel
 import com.example.cryptomonitor.data.models.CryptoPrice
+import com.example.cryptomonitor.data.models.CryptoAlert
 
 @Composable
 fun CryptoList(
@@ -21,6 +22,7 @@ fun CryptoList(
     val selectedCurrency by viewModel.selectedCurrency.collectAsState()
     val selectedCryptos by viewModel.selectedCryptos.collectAsState()
     val prices by viewModel.prices.collectAsState()
+    val alerts by viewModel.alerts.collectAsState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -68,6 +70,7 @@ fun CryptoList(
                         isSelected = selectedCryptos.contains(symbol),
                         prices = prices[symbol],
                         selectedCurrency = selectedCurrency,
+                        existingAlert = alerts.find { it.coinId == symbol },
                         onToggle = { viewModel.toggleCrypto(symbol) },
                         onAlertClick = { showAddAlertDialog = symbol }
                     )
@@ -86,8 +89,10 @@ fun CryptoList(
     }
 
     showAddAlertDialog?.let { crypto ->
+        val existingAlert = alerts.find { it.coinId == crypto }
         AddAlertDialog(
             cryptoId = crypto,
+            existingAlert = existingAlert,
             onDismiss = { showAddAlertDialog = null },
             onConfirm = { alert ->
                 viewModel.addAlert(alert)
@@ -104,6 +109,7 @@ private fun CryptoCard(
     isSelected: Boolean,
     prices: Map<String, CryptoPrice>?,
     selectedCurrency: String,
+    existingAlert: CryptoAlert?,
     onToggle: () -> Unit,
     onAlertClick: () -> Unit
 ) {
@@ -134,7 +140,11 @@ private fun CryptoCard(
                         onCheckedChange = { onToggle() }
                     )
                     IconButton(onClick = onAlertClick) {
-                        Text("🔔")
+                        if (existingAlert != null) {
+                            Text("🔔", color = MaterialTheme.colors.primary)
+                        } else {
+                            Text("🔔")
+                        }
                     }
                 }
             }
@@ -152,6 +162,26 @@ private fun CryptoCard(
                             "$platform: ${String.format("%.2f", priceData.price)} $selectedCurrency",
                             style = MaterialTheme.typography.body2
                         )
+                    }
+                }
+            }
+
+            if (existingAlert != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Column {
+                    Text(
+                        "Active Alerts",
+                        style = MaterialTheme.typography.subtitle2,
+                        color = MaterialTheme.colors.primary
+                    )
+                    existingAlert.upperLimit?.let { limit ->
+                        Text("Upper: $limit $selectedCurrency", style = MaterialTheme.typography.caption)
+                    }
+                    existingAlert.lowerLimit?.let { limit ->
+                        Text("Lower: $limit $selectedCurrency", style = MaterialTheme.typography.caption)
+                    }
+                    existingAlert.percentageChange?.let { change ->
+                        Text("Change: $change%", style = MaterialTheme.typography.caption)
                     }
                 }
             }
